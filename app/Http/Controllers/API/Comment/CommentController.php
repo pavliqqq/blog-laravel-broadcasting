@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Comment;
 
+use App\Events\NewCommentNotification;
 use App\Http\Requests\Comment\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Services\CommentService;
@@ -20,6 +21,7 @@ class CommentController
 
         $comments = $post->comments()
             ->with('user:id,name')
+            ->orderByDesc('created_at')
             ->paginate(10);
 
         return CommentResource::collection($comments);
@@ -33,7 +35,9 @@ class CommentController
 
         $comment = $service->create($validated, $post);
 
-        $comment->load('user:id,email');
+        $comment->load('user');
+
+        event(new NewCommentNotification($comment));
 
         return new CommentResource($comment);
     }
