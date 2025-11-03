@@ -24,7 +24,9 @@ class DatabaseSeeder extends Seeder
             'password' => '12345678'
         ]);
 
-        User::factory(5)->create();
+        User::factory(5)->create([
+            'password' => '12345678'
+        ]);
 
         Category::factory()
             ->count(5)
