@@ -19,9 +19,9 @@ class AuthController
 
         $user = $service->create($validated);
 
-        $token = $user->createToken('personal-token', expiresAt: now()->addHour())->plainTextToken;
+        $token = $user->createToken('personal-token')->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json(['token' => $token, 'user_id' => $user->id]);
     }
 
     public function login(AuthRequest $request): JsonResponse
@@ -34,9 +34,9 @@ class AuthController
             return response()->json(['error' => "That email and password combination didn't work. Try again."], 401);
         }
 
-        $token = $user->createToken('personal-token', expiresAt: now()->addHour())->plainTextToken;
+        $token = $user->createToken('personal-token')->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json(['token' => $token, 'user_id' => $user->id]);
     }
 
     public function logout(Request $request): JsonResponse
