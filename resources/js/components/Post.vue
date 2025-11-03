@@ -64,11 +64,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import {onMounted, ref, watchEffect} from "vue";
+import {useRoute} from "vue-router";
 import BaseTextArea from "../components/UI/BaseTextArea.vue";
-import { useAuthStore } from "../stores/authStore.js";
-import { toast } from "vue3-toastify";
+import {useAuthStore} from "../stores/authStore.js";
+import {toast} from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
 const authStore = useAuthStore();
@@ -82,20 +82,30 @@ const comments = ref([]);
 const isCreate = ref(false);
 const commentBody = ref(null);
 
-Echo.channel("posts." + postId).listen("NewCommentNotification", (e) => {
-    toast(`New comment: ${e.comment.content}`, {
-        theme: "dark",
-        type: "info",
-        transition: "slide",
-        autoClose: 5000,
-    });
-    comments.value.unshift(e.comment);
-});
-
 onMounted(() => {
     getPost();
     getComments();
 });
+
+watchEffect((onInvalidate) => {
+    if (!postId) {
+        return;
+    }
+
+    Echo.channel("posts." + postId).listen("NewCommentNotification", (e) => {
+        toast(`New comment: ${e.comment.content}`, {
+            theme: "dark",
+            type: "info",
+            transition: "slide",
+            autoClose: 5000,
+        });
+        comments.value.unshift(e.comment);
+    });
+
+    onInvalidate(() => {
+        Echo.leave("posts." + postId);
+    })
+})
 
 async function getPost() {
     try {
@@ -119,7 +129,7 @@ async function createComment() {
     try {
         await axios.post(
             `/api/posts/${postId}/comments`,
-            { content: commentBody.value },
+            {content: commentBody.value},
             {
                 headers: {
                     Authorization: `Bearer ${authStore.token}`,
