@@ -4,7 +4,9 @@
 
 - PHP 8.0 or higher
 - MySQL or MariaDB
+- Node.js 22 or higher
 - Composer 2.8 or higher
+- Docker
 
 ## Installation
 
@@ -14,11 +16,16 @@
 composer install
 ```
 
+```bash
+npm install
+```
+
 ### 2. Environment Setup
 
 ```bash
 cp .env.example .env
 ```
+
 Edit the .env file to configure your environment variables (database, app key, etc.):
 
 ```bash
@@ -27,19 +34,19 @@ php artisan key:generate
 
 ### 3. Database Setup
 
-1) Connect to MySQL server:
+1. Connect to MySQL server:
 
 ```bash
 mysql -u root -p
 ```
 
-2) Create the database:
+2. Create the database:
 
 ```bash
 CREATE DATABASE blog;
 ```
 
-3) Run the import command:
+3. Run the import command:
 
 ```bash
 mysql -u root -p blog < dump.sql
@@ -55,20 +62,26 @@ php artisan migrate
 php artisan db:seed
 ```
 
-### 5. Start Local Server
+### 5. Start Project
 
 ```bash
 php artisan serve
 ```
 
-Project will be accessible at:
-http://localhost:8000
+```bash
+npm run dev
+```
+
+```bash
+docker run -p 6001:6001 -p 9601:9601 quay.io/soketi/soketi:latest-16-alpine
+```
 
 ## Testing
 
 ### 1. Set test database at .env.testing
-### 2. Use command below
-```bash
-./vendor/bin/pest 
-```
 
+### 2. Use command below
+
+```bash
+./vendor/bin/pest
+```
